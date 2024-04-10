@@ -131,6 +131,17 @@ return {
           },
         })
       end,
+      ["dartls"] = function()
+        lspconfig["dartls"].setup({
+          capabilities = capabilities,
+          settings = {
+            dart = {
+              completeFunctionCalls = true,
+              showTodos = true,
+            },
+          },
+        })
+      end,
     })
   end,
 }
