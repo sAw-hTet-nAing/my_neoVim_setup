@@ -138,6 +138,9 @@ return {
             dart = {
               completeFunctionCalls = true,
               showTodos = true,
+              renameFilesWithClasses = "prompt", -- "always"
+              enableSnippets = true,
+              updateImportsOnRename = true,
             },
           },
         })
