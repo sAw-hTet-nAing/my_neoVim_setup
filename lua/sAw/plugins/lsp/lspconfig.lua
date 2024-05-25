@@ -134,6 +134,7 @@ return {
       ["dartls"] = function()
         lspconfig["dartls"].setup({
           capabilities = capabilities,
+          cmd = { "/path/to/dart", "language-server", "--protocol=lsp" },
           settings = {
             dart = {
               completeFunctionCalls = true,

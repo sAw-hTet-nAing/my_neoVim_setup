@@ -1,67 +1,77 @@
 return {
 
   -- for DAP support
-  { "mfussenegger/nvim-dap" },
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      "rcarriga/nvim-dap-ui",
+      "nvim-neotest/nvim-nio",
+    },
+    config = function()
+      local dap = require("dap")
+      local dapui = require("dapui")
+
+      require("dapui").setup()
+      -- Dart / Flutter
+      dap.configurations.dart = {
+        {
+          type = "dart",
+          request = "launch",
+          name = "Launch dart",
+          dartSdkPath = "~/flutter_versions/flutter/bin/cache/dart-sdk/bin/dart", -- ensure this is correct
+          flutterSdkPath = "~/flutter_versions/flutter/bin/flutter", -- ensure this is correct
+          program = "${workspaceFolder}/lib/main.dart", -- ensure this is correct
+          cwd = "${workspaceFolder}",
+          console = "integratedTerminal",
+        },
+        {
+          type = "flutter",
+          request = "launch",
+          name = "Launch flutter",
+          dartSdkPath = "~/flutter_versions/flutter/bin/cache/dart-sdk/bin/dart", -- ensure this is correct
+          flutterSdkPath = "~/flutter_versions/flutter/bin/flutter", -- ensure this is correct
+          program = "${workspaceFolder}/lib/main.dart", -- ensure this is correct
+          cwd = "${workspaceFolder}",
+          console = "integratedTerminal",
+        },
+      }
+
+      dap.adapters.dart = {
+        type = "executable",
+        command = "dart",
+        args = { "debug_adapter" },
+        console = "integratedTerminal",
+      }
+      dap.adapters.flutter = {
+        type = "executable",
+        command = "flutter",
+        args = { "debug_adapter" },
+        console = "integratedTerminal",
+      }
+      dap.listeners.before.attach.dapui_config = function()
+        dapui.open()
+      end
+      dap.listeners.before.launch.dapui_config = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated.dapui_config = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited.dapui_config = function()
+        dapui.close()
+      end
+      vim.keymap.set("n", "<leader>dt", dap.toggle_breakpoint, { desc = "Toggle BreakPoint" })
+      vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue" })
+      vim.keymap.set("n", "<leader>dr", dap.restart, { desc = "Restart Debug" })
+      vim.keymap.set("n", "<leader>ds", dap.close, { desc = "Stop Debug" })
+      vim.keymap.set("n", "<leader>dtt", dap.terminate, { desc = "Terminate Debug" })
+    end,
+  },
   {
     "akinsho/flutter-tools.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "stevearc/dressing.nvim" },
     config = function()
-      require("flutter-tools").setup({
-
-        decorations = {
-          statusline = {
-            -- set to true to be able use the 'flutter_tools_decorations.app_version' in your statusline
-            -- this will show the current version of the flutter app from the pubspec.yaml file
-            app_version = true,
-            -- set to true to be able use the 'flutter_tools_decorations.device' in your statusline
-            -- this will show the currently running device if an application was started with a specific
-            -- device
-            device = true,
-            -- set to true to be able use the 'flutter_tools_decorations.project_config' in your statusline
-            -- this will show the currently selected project configuration
-            project_config = false,
-          },
-        },
-        -- (uncomment below line for windows only)
-        -- flutter_path = "home/flutter/bin/flutter.bat",
-
-        debugger = {
-          -- make these two params true to enable debug mode
-          enabled = false,
-          run_via_dap = false,
-          register_configurations = function(_)
-            require("dap").adapters.dart = {
-              type = "executable",
-              command = vim.fn.stdpath("data") .. "/mason/bin/dart-debug-adapter",
-              args = { "flutter" },
-            }
-
-            require("dap").configurations.dart = {
-              {
-                type = "dart",
-                request = "launch",
-                name = "Launch flutter",
-                dartSdkPath = "~/flutter_versions/flutter/bin",
-                flutterSdkPath = "~/flutter_versions/flutter",
-                program = "${workspaceFolder}/lib/main.dart",
-                cwd = "${workspaceFolder}",
-              },
-            }
-            -- uncomment below line if you've launch.json file already in your vscode setup
-            require("dap.ext.vscode").load_launchjs()
-          end,
-        },
-        dev_log = {
-          -- toggle it when you run without DAP
-          enabled = true,
-          notify_errors = false,
-          open_cmd = "tabedit",
-        },
-        lsp = {
-          on_attach = require("sAw.plugins.lsp.lspconfig").common_on_attach,
-          capabilities = require("sAw.plugins.lsp.lspconfig").default_capabilities,
-        },
-      })
+      require("flutter-tools").setup({})
     end,
   },
   -- for dart syntax hightling
